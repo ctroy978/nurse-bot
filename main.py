@@ -39,10 +39,9 @@ def get_question(root, id):
 def correct_response(root, id):
     response = []
     try:
-        for x in root.findall('responseDeclaration/correctResponse'):
-            for y in iter(x):
-                if y.tag == 'value':
-                    response.append(y.text)
+        for x in root.findall('.//correctResponse'):
+            for y in x.itertext():
+                response.append(y)
     except Exception as e:
         print('problem with response for doc: ' + id)
         print(e)
@@ -52,27 +51,29 @@ def correct_response(root, id):
 def student_choices(root, id):
     response = []
     try:
-        for x in root.findall('itemBody/choiceInteraction'):
-            for y in iter(x):
-                if y.tag == 'simpleChoice':
-                    response.append(y.attrib['identifier'] + '--> ' + y.text)
+        for x in root.findall('.//simpleChoice'):
+            for y in x.itertext():
+                response.append(x.attrib['identifier'] + '--> ' + y)
+
     except Exception as e:
         print('problem with student choices' + id)
         print(e)
-    else:
-        return webify.multiple('Student Choices', response)
+
+    return webify.multiple('Student Choices', response)
 
 def give_feedback(root, id):
+    response = []
     try:
-        for x in root.findall('modalFeedback'):
-            for y in iter(x):
+        for x in root.findall('.//modalFeedback'):
+            for y in x.itertext():
                 if x.attrib['identifier'] == 'CORRECT_FEEDBACK':
-                    feedback = y.text
+                    response.append(x.attrib['identifier'] + '--> ' + y)
+
+
     except Exception as e:
         print('problem with feedback' + id)
         print(e)
-    else:
-        return webify.single('Feedback', feedback)
+    return webify.multiple('Feedback', response)
 
 
 
